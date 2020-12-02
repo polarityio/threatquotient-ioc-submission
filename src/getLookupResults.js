@@ -1,5 +1,8 @@
 const fp = require('lodash/fp');
 
+const { TYPES_FOR_QUERY } = require('./constants');
+const threatQConfig = require('../config/threatq.config');
+
 const { partitionFlatMap, splitOutIgnoredIps } = require('./dataTransformations');
 const createLookupResults = require('./createLookupResults');
 
@@ -13,7 +16,8 @@ const getLookupResults = (entities, options, requestWithDefaults, Logger) =>
       const foundEntities = await _getFoundEntities(
         entitiesPartition,
         options,
-        requestWithDefaults
+        requestWithDefaults,
+        Logger
       );
 
       const lookupResults = createLookupResults(
@@ -35,34 +39,59 @@ const getLookupResults = (entities, options, requestWithDefaults, Logger) =>
 const _getFoundEntities = async (
   entitiesPartition,
   options,
-  requestWithDefaults
+  requestWithDefaults,
+  Logger
 ) => {
-
-  const foundEntities = fp.compact(
-    await Promise.all(
-      fp.map(async (entity) => {
-        const searchResults = await fp.getOr(
-          [],
-          'body.data', // TODO: Modify with correct data path
-          await requestWithDefaults({
-            //TODO: Add properties for search request
-            options
-          })
-        );
-
-        return (
-          searchResults &&
-          searchResults.length && {
-            ...entity,
-            // TODO: Custom data transformation for search results go here
-          }
-        );
-      }, entitiesPartition)
-    )
+  const foundEntities = fp.getOr(
+    [],
+    'body.data',
+    await requestWithDefaults({
+      method: 'POST',
+      uri: `${options.url}/api/search/advanced`,
+      qs: {
+        limit: 10
+      },
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        indicators: _createSearchQuery(entitiesPartition, options)
+      }),
+      options
+    })
   );
 
   return foundEntities;
 };
+
+const _createSearchQuery = (entityObjects, options) =>
+  fp.map(
+    (entityObj) => [
+      {
+        field: 'indicator_value',
+        operator: 'is',
+        value: entityObj.value
+      },
+      {
+        field: 'indicator_type',
+        operator: 'is',
+        value: threatQConfig.threatQIndicatorTypes[TYPES_FOR_QUERY[entityObj.type]]
+      },
+      {
+        field: 'indicator_score',
+        operator: 'greater than or equal to',
+        value: options.minimumScore.value
+      },
+      {
+        field: 'indicator_score',
+        operator: 'less than or equal to',
+        value: options.maximumScore.value
+      }
+    ],
+    entityObjects
+  );
+
+ 
 
 module.exports = {
   getLookupResults

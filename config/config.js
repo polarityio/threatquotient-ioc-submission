@@ -1,8 +1,8 @@
 module.exports = {
-  name: '___ IOC Submission',
-  acronym: '___+', // TODO: This will need to be the same acronym as the original integration, if we have one, and a '+' at the end
+  name: 'ThreatQuotient IOC Submission',
+  acronym: 'TQ+',
   description:
-    'Polarity integration that connects to the ___ threat intelligence platform using the IOC Submission interface format.',
+    'Polarity integration that connects to the ThreatQuotient threat intelligence platform using the IOC Submission interface format.',
   entityTypes: ['domain', 'IPv4', 'IPv6', 'email', 'MD5', 'SHA1', 'SHA256'],
   styles: ['./styles/styles.less'],
   block: {
@@ -34,32 +34,173 @@ module.exports = {
     level: 'info' //trace, debug, info, warn, error, fatal
   },
   options: [
-    // TODO: Add other options as needed
     {
       key: 'url',
-      name: '___ URL',
+      name: 'ThreatQuotient Server URL',
       description:
-        'URL of your ___ instance to include the schema (i.e., https://) and port if applicable',
+        'The URL for your ThreatQ server which should include the schema (i.e., http, https) and port if required',
+      default: '',
+      type: 'text',
+      userCanEdit: false,
+      adminOnly: true
+    },
+    {
+      key: 'username',
+      name: 'Username',
+      description:
+        'Your TQ username you want the integration to authenticate as (typically an email address)',
       default: '',
       type: 'text',
       userCanEdit: true,
       adminOnly: false
     },
     {
-      key: 'apiKey',
-      name: 'API Key',
-      description: 'The API (secret) Key associated with the provided Access ID',
+      key: 'password',
+      name: 'Password',
+      description:
+        'The password for the provided username you want the integration to authenticate as',
       default: '',
       type: 'password',
-      userCanEdit: false,
-      adminOnly: true
+      userCanEdit: true,
+      adminOnly: false
+    },
+    {
+      key: 'client',
+      name: 'Client ID',
+      description:
+        'The Client ID for your ThreatQuotient deployment.  (accessible at https://<yourserver>/assets/js/config.js)',
+      default: '',
+      type: 'text',
+      userCanEdit: true,
+      adminOnly: false
     },
     {
       key: 'allowDelete',
       name: 'Allow IOC Deletion',
-      description: 'If checked, users will be able to delete indicators from ___.',
+      description:
+        'If checked, users will be able to delete indicators from ThreatQuotient.',
       default: false,
       type: 'boolean',
+      userCanEdit: true,
+      adminOnly: false
+    },
+    {
+      key: 'minimumScore',
+      name: 'Minimum Score',
+      description:
+        'The minimum indicator score required for indicators to be found in search by the integration',
+      default: {
+        value: '5',
+        display: 'Low'
+      },
+      type: 'select',
+      options: [
+        {
+          value: '100', // the max score in the ThreatQ interface is 10 but the actual max is 100 which is hidden by the server
+          display: '10 - Very High'
+        },
+        {
+          value: '9',
+          display: '9 - High'
+        },
+        {
+          value: '8',
+          display: '8 - Medium'
+        },
+        {
+          value: '7',
+          display: '7 - Medium'
+        },
+        {
+          value: '6',
+          display: '6 - Low'
+        },
+        {
+          value: '5',
+          display: '5 - Low'
+        },
+        {
+          value: '4',
+          display: '4 - Very Low'
+        },
+        {
+          value: '3',
+          display: '3 - Very Low'
+        },
+        {
+          value: '2',
+          display: '2 - Very Low'
+        },
+        {
+          value: '1',
+          display: '1 - Very Low'
+        },
+        {
+          value: '0',
+          display: '0 - Very Low/Generated Score'
+        }
+      ],
+      multiple: false,
+      userCanEdit: true,
+      adminOnly: false
+    },
+    {
+      key: 'maximumScore',
+      name: 'Maximum Score',
+      description:
+        'The maximum indicator score required for indicators to be found in search by the integration',
+      default: {
+        value: '100',
+        display: '10 - Very High'
+      },
+      type: 'select',
+      options: [
+        {
+          value: '100', // the max score in the ThreatQ interface is 10 but the actual max is 100 which is hidden by the server
+          display: '10 - Very High'
+        },
+        {
+          value: '9',
+          display: '9 - High'
+        },
+        {
+          value: '8',
+          display: '8 - Medium'
+        },
+        {
+          value: '7',
+          display: '7 - Medium'
+        },
+        {
+          value: '6',
+          display: '6 - Low'
+        },
+        {
+          value: '5',
+          display: '5 - Low'
+        },
+        {
+          value: '4',
+          display: '4 - Very Low'
+        },
+        {
+          value: '3',
+          display: '3 - Very Low'
+        },
+        {
+          value: '2',
+          display: '2 - Very Low'
+        },
+        {
+          value: '1',
+          display: '1 - Very Low'
+        },
+        {
+          value: '0',
+          display: '0 - Very Low/Generated Score'
+        }
+      ],
+      multiple: false,
       userCanEdit: true,
       adminOnly: false
     }

@@ -29,7 +29,7 @@ const submitItems = async (
     );
 
     // TODO: Verify a separate step for creating tags is needed and delete this function if not
-    await createTags(newIocsToSubmit, submitTags, options, requestWithDefaults, Logger);
+    // await createTags(newIocsToSubmit, submitTags, options, requestWithDefaults, Logger);
 
     return callback(null, {
       foundEntities: [...createdItems, ...foundEntities]
@@ -58,21 +58,18 @@ const createItems = async (
   requestWithDefaults,
   Logger
 ) => {
-  await Promise.all(
-    fp.map(
-      (entity) =>
-        requestWithDefaults({
-          // TODO: Replace with request options for creating your data type
-          options
-        }),
-      newIocsToSubmit
-    )
-  );
+  // await Promise.all(
+  //   fp.map(
+  //     (entity) =>
+  //       requestWithDefaults({
+  //         // TODO: Replace with request options for creating your data type
+  //         options
+  //       }),
+  //     newIocsToSubmit
+  //   )
+  // );
   return fp.map((createdEntity) => ({
     ...createdEntity,
-    linkType: INDICATOR_TYPES[POLARITY_TYPE_TO_THREATCONNECT[createdEntity.type]],
-    canDelete: true,
-    resultsFound: true,
     displayedType: ENTITY_DISPLAY_TYPES[createdEntity.type]
   }))(newIocsToSubmit);
 };

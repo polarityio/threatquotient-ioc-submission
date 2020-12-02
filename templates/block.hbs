@@ -1,7 +1,7 @@
 <div class={{if (and (not (or newIocs.length newIocsToSubmit.length)) interactionDisabled) "modal-open"}}>
   {{#if foundEntities.length}}
     <h1 class="p-title">
-      {{fa-icon "info-circle" size="sm"}} Already In ___
+      {{fa-icon "info-circle" size="sm"}} Already In ThreatQuotient
     </h1>
     {{#if isDeleting}}
       <div class="ioc-deletion-modal">
@@ -9,7 +9,7 @@
           <span class="p-key">
             <span class="p-value"><em><b>DANGER:</b></em></span>
             <div>
-              <span>Deleting an indicator cannot be undone and will remove all data for the indicator in ___.</span>
+              <span>Deleting an indicator cannot be undone and will remove all data for the indicator in ThreatQuotient.</span>
             </div>
             <div>
               <span>Are you sure you want to delete the indicator <em><b>{{entityToDelete.value}}</b></em>?</span>
@@ -28,7 +28,7 @@
           <tr>
             <td>
               {{#if (not interactionDisabled)}}
-                <a href="{{details.url}}/TODO: ioc url goes here">
+                <a href="{{details.url}}/indicators/{{foundEntity.id}}/details">
                   {{foundEntity.value}} {{fa-icon "external-link" fixedWidth=true class="external-link-icon"}}
                 </a>
               {{else}}
@@ -42,7 +42,7 @@
               <button
                 class="no-style-button delete"
                 {{action "initiateItemDeletion" foundEntity}}
-                title="Delete IOC from ___"
+                title="Delete IOC from ThreatQuotient"
                 disabled={{interactionDisabled}}
               >
                 {{fa-icon "trash" fixedWidth=true}}
@@ -74,10 +74,10 @@
   {{/if}}
 
   {{#if (or newIocs.length newIocsToSubmit.length)}}
-    <div> TODO: Make sure this div doesn't cause styling issues
+    <div>
       <div class="title-with-button">
         <h1 class="p-title">
-          {{fa-icon "sparkles" size="sm" fixedWidth=true}} Not Currently In ___
+          {{fa-icon "sparkles" size="sm" fixedWidth=true}} Not Currently In ThreatQuotient
         </h1>
         {{#if newIocs.length}}
           <button
@@ -126,7 +126,7 @@
     <div>
       <div class="title-with-button">
         <h1 class="p-title">
-          {{fa-icon "upload" size="sm" fixedWidth=true}} To Be Submitted to ___
+          {{fa-icon "upload" size="sm" fixedWidth=true}} To Be Submitted to ThreatQuotient
         </h1>
         {{#if newIocsToSubmit.length}}
           <button
@@ -293,6 +293,6 @@
 </div>
 {{#if (and (not foundEntities.length) (not (or newIocs.length newIocsToSubmit.length)))}}
   <div class="note">
-    <span class="p-key"><em>All Already In ___ IOCs have been deleted</em></span>
+    <span class="p-key"><em>All Already In ThreatQuotient IOCs have been deleted</em></span>
   </div>
 {{/if}}

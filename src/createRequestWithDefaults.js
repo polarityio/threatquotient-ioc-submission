@@ -3,7 +3,7 @@ const request = require('request');
 const { promisify } = require('util');
 const fp = require('lodash/fp');
 const config = require('../config/config');
-const crypto = require('crypto');
+const getAuthToken = require('./getAuthToken');
 
 const { checkForInternalServiceError } = require('./handleError');
 
@@ -70,16 +70,28 @@ const createRequestWithDefaults = (Logger) => {
     options,
     ...requestOptions
   }) => {
-    // TODO: Add Auth method here if needed
+    const isAuthRequest = requestOptions.authRequest;
+    if (!isAuthRequest) {
+      const token = await getAuthToken(
+        options,
+        requestDefaultsWithInterceptors
+      ).catch((error) => {
+        Logger.error({ error }, 'Unable to retrieve Auth Token');
+        throw error;
+      });
 
-    return {
-      ...requestOptions,
-      uri,
-      headers: {
-        ...requestOptions.headers,
-        // TODO: Add auth Headers here
-      }
-    };
+      Logger.trace({ token }, 'Token');
+
+      return {
+        ...requestOptions,
+        headers: {
+          ...requestOptions.headers,
+          Authorization: `Bearer ${token}`
+        }
+      };
+    }
+
+    return requestOptions;
   };
 
   const checkForStatusError = ({ statusCode, body }, requestOptions) => {

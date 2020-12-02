@@ -8,10 +8,10 @@ const deleteItem = async (
   callback
 ) => {
   try {
-    await requestWithDefaults({
-      // TODO: Add request options for deletion logic
-      options
-    });
+    // await requestWithDefaults({
+    //   // TODO: Add request options for deletion logic
+    //   options
+    // });
   } catch (error) {
     Logger.error(error, 'Item Deletion Error');
     return callback({

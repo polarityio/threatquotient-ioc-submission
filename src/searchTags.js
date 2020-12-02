@@ -11,10 +11,11 @@ const searchTags = async (
     const tagResults = fp.getOr(
       [],
       'body.data', // TODO: Modify to correct path
-      await requestWithDefaults({
-        // TODO: Add properties to tag searching here
-        options
-      })
+      // await requestWithDefaults({
+      //   // TODO: Add properties to tag searching here
+      //   options
+      // })
+      undefined
     );
 
     const tags = formatTags(tagResults);
@@ -33,6 +34,8 @@ const searchTags = async (
   }
 };
 
+const _getComparableString = fp.flow(fp.getOr('', 'name'), fp.lowerCase, fp.trim);
+
 const formatTags = fp.flow(
   // TODO: Modify data as needed to ensure the tag objects include a `name` property
   fp.filter((tagResult) =>
@@ -46,7 +49,5 @@ const formatTags = fp.flow(
   fp.sortBy('name'),
   fp.slice(0, 50)
 );
-
-const _getComparableString = fp.flow(fp.getOr('', 'name'), fp.lowerCase, fp.trim);
 
 module.exports = searchTags;

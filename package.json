@@ -1,6 +1,6 @@
 {
   "main": "./integration.js",
-  "name": "___-ioc-submission",
+  "name": "threatquotient-ioc-submission",
   "version": "3.0.0-beta",
   "private": true,
   "license": "MIT",
@@ -8,6 +8,7 @@
   "dependencies": {
     "aigle": "^1.14.1",
     "lodash": "^4.17.19",
+    "node-cache": "^5.1.2",
     "request": "^2.88.2"
   }
 }

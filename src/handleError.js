@@ -2,7 +2,7 @@ const STATUS_CODE_ERROR_MESSAGE = {
   // TODO: Modify these as needed
   400: (error) => ({
     err: error.message,
-    detail: error.description
+    detail: `User credentials are not valid, Login Request Failed: ${error.description}`
   }),
   401: (error) => ({
     err: 'Unauthorized',
