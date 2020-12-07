@@ -3,7 +3,7 @@
 const validateOptions = require('./src/validateOptions');
 const createRequestWithDefaults = require('./src/createRequestWithDefaults');
 const submitItems = require('./src/submitItems');
-const searchTags = require('./src/searchTags');
+const searchProperty = require('./src/searchProperty');
 const deleteItem = require('./src/deleteItem');
 
 const { handleError } = require('./src/handleError');
@@ -48,7 +48,45 @@ const onMessage = async ({ data: { action, ...actionParams} }, options, callback
   } else if (action === 'SUBMIT_ITEMS') {
     submitItems(actionParams, requestWithDefaults, options, Logger, callback);
   } else if (action === 'SEARCH_TAGS') {
-    searchTags(actionParams, requestWithDefaults, options, Logger, callback);
+    searchProperty(
+      { ...actionParams, property: 'tags' },
+      requestWithDefaults,
+      options,
+      Logger,
+      callback
+    );
+  } else if (action === 'SEARCH_SOURCES') {
+    searchProperty(
+      { ...actionParams, property: 'sources' },
+      requestWithDefaults,
+      options,
+      Logger,
+      callback
+    );
+  } else if (action === 'SEARCH_ATTRIBUTE_KEYS') {
+    searchProperty(
+      {
+        ...actionParams,
+        property: 'attributeKeys',
+        propertyPath: 'attributes/object/indicators'
+      },
+      requestWithDefaults,
+      options,
+      Logger,
+      callback
+    );
+  } else if (action === 'SEARCH_ATTRIBUTE_VALUES') {
+    searchProperty(
+      {
+        ...actionParams,
+        property: 'attributeValues',
+        propertyPath: 'attributes/indicators/values'
+      },
+      requestWithDefaults,
+      options,
+      Logger,
+      callback
+    );
   } else {
     callback(null, {});
   }

@@ -11,7 +11,13 @@ const submitItems = async (
   {
     newIocsToSubmit,
     foundEntities,
-    submitTags 
+    description,
+    score,
+    status,
+    tags,
+    sources,
+    attributes,
+
     // TODO: Add Submission Options keys here from ../components/block.js
   },
   requestWithDefaults,
@@ -58,16 +64,73 @@ const createItems = async (
   requestWithDefaults,
   Logger
 ) => {
-  // await Promise.all(
-  //   fp.map(
-  //     (entity) =>
-  //       requestWithDefaults({
-  //         // TODO: Replace with request options for creating your data type
-  //         options
-  //       }),
-  //     newIocsToSubmit
-  //   )
-  // );
+  await requestWithDefaults({
+    method: 'POST',
+    uri: `${options.url}/api/indicators`,
+    headers: { 'Content-Type': 'application/json' },
+    body: [
+      {
+        class: 'network',
+        value: '115.47.67.155',
+        type_id: 10, // TODO: check to see if this is the score property rather than manual_score
+        description: 'desc', //TODO: verify this is actually being submitted
+        manual_score: 2, //TODO: verify this is actually being submitted
+        status_id: 2,
+        /*
+        {
+          1: 'Active',
+          2: 'Expired',
+          3: 'Indirect',
+          4: 'Review',
+          5: 'Whitelisted'
+        }
+        */
+        sources: [
+          // searchable list like tags
+          {
+            name: 'Source',
+            tlp: {
+              name: 'GREEN'
+            }
+          }
+        ],
+        attributes: [
+          {
+            name: 'Confidence',
+            value: 'High',
+            sources: [
+              {
+                name: 'Source',
+                tlp: {
+                  name: 'GREEN'
+                }
+              }
+            ]
+          },
+          {
+            name: 'Port',
+            value: '4000'
+          },
+          {
+            name: 'Scheme',
+            value: 'https'
+          }
+        ],
+        //TODO: Verify tags submit correctly
+        tags: [
+          {
+            id: 23,
+            name: 'another tag'
+          },
+          {
+            name: 'New Test tag from int'
+          }
+        ]
+      }
+    ],
+    options
+  });
+
   return fp.map((createdEntity) => ({
     ...createdEntity,
     displayedType: ENTITY_DISPLAY_TYPES[createdEntity.type]
