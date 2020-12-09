@@ -15,7 +15,9 @@ const searchProperty = async (
       await requestWithDefaults({
         url: `${options.url}/api/${property}`,
         qs: {
-          [sortField]: `${term}${['tags', 'sources'].includes(property) ? '%25' : ''}`,
+          ...(term && {
+            [sortField]: `${term}${['tags', 'sources'].includes(property) ? '%' : ''}`
+          }),
           limit: 50,
           sort: sortField
         },
@@ -43,20 +45,21 @@ const searchProperty = async (
   }
 };
 
-const _getComparableString = (sortField, str) =>
+const _getComparableString = (sortField) => (str) =>
   fp.flow(fp.getOr('', sortField), fp.lowerCase, fp.trim)(str);
 
-const formatResults = (tagResults, selectedTags, sortField) =>
+const formatResults = (results, selectedProperties, sortField) =>
   fp.flow(
-    fp.filter((tagResult) =>
+    fp.filter((result) =>
       fp.every(
-        (selectedTag) =>
-          _getComparableString(tagResult) !== _getComparableString(selectedTag),
-        selectedTags
+        (selectedProperty) =>
+          _getComparableString(sortField)(result) !==
+          _getComparableString(sortField)(selectedProperty),
+        selectedProperties
       )
     ),
-    fp.uniqBy(_getComparableString),
+    fp.uniqBy(_getComparableString(sortField)),
     fp.sortBy(sortField)
-  )(tagResults);
+  )(results);
 
 module.exports = searchProperty;

@@ -63,30 +63,6 @@ const onMessage = async ({ data: { action, ...actionParams} }, options, callback
       Logger,
       callback
     );
-  } else if (action === 'SEARCH_ATTRIBUTE_KEYS') {
-    searchProperty(
-      {
-        ...actionParams,
-        property: 'attributeKeys',
-        propertyPath: 'attributes/object/indicators'
-      },
-      requestWithDefaults,
-      options,
-      Logger,
-      callback
-    );
-  } else if (action === 'SEARCH_ATTRIBUTE_VALUES') {
-    searchProperty(
-      {
-        ...actionParams,
-        property: 'attributeValues',
-        propertyPath: 'attributes/indicators/values'
-      },
-      requestWithDefaults,
-      options,
-      Logger,
-      callback
-    );
   } else {
     callback(null, {});
   }

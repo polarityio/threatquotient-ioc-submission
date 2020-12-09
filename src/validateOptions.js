@@ -16,7 +16,6 @@ const validateOptions = (options, callback) => {
 
   const urlValidationError = _validateUrlOption(options.url);
 
-  // TODO: add any other valitation for Polarity Options needed here
   callback(null, stringValidationErrors.concat(urlValidationError));
 };
 

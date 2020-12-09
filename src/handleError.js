@@ -1,5 +1,6 @@
+const fp = require('lodash/fp');
+
 const STATUS_CODE_ERROR_MESSAGE = {
-  // TODO: Modify these as needed
   400: (error) => ({
     err: error.message,
     detail: `User credentials are not valid, Login Request Failed: ${error.description}`
@@ -47,12 +48,11 @@ const handleError = (error) =>
   )(error);
 
 const checkForInternalServiceError = (statusCode, response) => {
-  // TODO: Modify for your apps internal error types/messsages
-  const { status } = response;
-  if (['Error', 'Failure'].includes(status)) {
-    const internalServiceError = Error(response.message);
+  const error = JSON.stringify((fp.get('data.0.error', response)));
+  if (error) {
+    const internalServiceError = Error(error);
     internalServiceError.status = 'internalServiceError';
-    internalServiceError.description = response.message;
+    internalServiceError.description = error;
     throw internalServiceError;
   }
   return response;

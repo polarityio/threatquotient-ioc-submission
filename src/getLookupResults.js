@@ -1,6 +1,6 @@
 const fp = require('lodash/fp');
 
-const { TYPES_FOR_QUERY } = require('./constants');
+const { ENTITY_DISPLAY_TYPES } = require('./constants');
 const threatQConfig = require('../config/threatq.config');
 
 const { partitionFlatMap, splitOutIgnoredIps } = require('./dataTransformations');
@@ -54,14 +54,24 @@ const _getFoundEntities = async (
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
+      body: {
         indicators: _createSearchQuery(entitiesPartition, options)
-      }),
+      },
       options
     })
   );
 
-  return foundEntities;
+  return fp.map((foundEntity) => {
+    const entityFromUser = fp.find(
+      ({ value }) => value === foundEntity.value,
+      entitiesPartition
+    );
+    return {
+      ...foundEntity,
+      ...entityFromUser,
+      displayedType: ENTITY_DISPLAY_TYPES[entityFromUser.type]
+    };
+  }, foundEntities);
 };
 
 const _createSearchQuery = (entityObjects, options) =>
@@ -75,17 +85,7 @@ const _createSearchQuery = (entityObjects, options) =>
       {
         field: 'indicator_type',
         operator: 'is',
-        value: threatQConfig.threatQIndicatorTypes[TYPES_FOR_QUERY[entityObj.type]]
-      },
-      {
-        field: 'indicator_score',
-        operator: 'greater than or equal to',
-        value: options.minimumScore.value
-      },
-      {
-        field: 'indicator_score',
-        operator: 'less than or equal to',
-        value: options.maximumScore.value
+        value: threatQConfig.threatQIndicatorTypes[fp.toLower(entityObj.type)]
       }
     ],
     entityObjects

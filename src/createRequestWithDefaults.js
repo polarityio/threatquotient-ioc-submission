@@ -25,14 +25,23 @@ const createRequestWithDefaults = (Logger) => {
   };
 
   const requestWithDefaults = (
-    preRequestFunction = () => ({}),
-    postRequestSuccessFunction = (x) => x,
-    postRequestFailureFunction = (e) => {
+    preRequestFunction = async () => ({}),
+    postRequestSuccessFunction = async (x) => x,
+    postRequestFailureFunction = async (e) => {
       throw e;
     }
   ) => {
-    const _requestWithDefault = promisify(request.defaults(fp.omit('json')(defaults)));
-    return async ({ json: bodyWillBeJSON, ...requestOptions }) => {
+    const defaultsRequest = request.defaults(defaults);
+
+    const _requestWithDefault = (requestOptions) =>
+      new Promise((resolve, reject) => {
+        defaultsRequest(requestOptions, (err, res, body) => {
+          if (err) return reject(err);
+          resolve({ ...res, body });
+        });
+      });
+
+    return async (requestOptions) => {
       const preRequestFunctionResults = await preRequestFunction(requestOptions);
       const _requestOptions = {
         ...requestOptions,
@@ -41,21 +50,10 @@ const createRequestWithDefaults = (Logger) => {
 
       let postRequestFunctionResults;
       try {
-        const { body: unformattedBody, ...result } = await _requestWithDefault(
-          _requestOptions
-        );
+        const result = await _requestWithDefault(_requestOptions);
+        checkForStatusError(result, _requestOptions);
 
-        const body =
-          (bodyWillBeJSON || defaults.json) && typeof unformattedBody === 'string'
-            ? JSON.parse(unformattedBody)
-            : unformattedBody;
-
-        checkForStatusError({ body, ...result }, _requestOptions);
-
-        postRequestFunctionResults = await postRequestSuccessFunction({
-          ...result,
-          body
-        });
+        postRequestFunctionResults = await postRequestSuccessFunction(result);
       } catch (error) {
         postRequestFunctionResults = await postRequestFailureFunction(
           error,
@@ -65,6 +63,7 @@ const createRequestWithDefaults = (Logger) => {
       return postRequestFunctionResults;
     };
   };
+
 
   const handleAuth = async ({
     options,
@@ -98,7 +97,7 @@ const createRequestWithDefaults = (Logger) => {
     Logger.trace({ visualLogID: '******************', statusCode, body, requestOptions });
     checkForInternalServiceError(statusCode, body);
     const roundedStatus = Math.round(statusCode / 100) * 100;
-    if (![200].includes(roundedStatus)) { // TODO: Add okay rounded status codes here
+    if (![200].includes(roundedStatus)) { 
       const requestError = Error('Request Error');
       requestError.status = statusCode;
       requestError.description = body;

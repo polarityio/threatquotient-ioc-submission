@@ -81,7 +81,7 @@ table {
 }
 
 .tag-container {
-  margin-top: -7px;
+  margin-top: 0;
 }
 
 .tag {
@@ -116,19 +116,23 @@ a.tag {
 
 .link-tag {
   .summary-tag {
-    background-color: #fff;
-    border: 1px solid #585858;
-    padding: 1px 5px 2px;
-    border-radius: 16px;
-    color: #07213a;
-    margin: 0 2px 5px 0;
+    background-color: #5995cd;
+    padding: 5px 6px 6px 10px;
+    border-radius: 24px;
+    color: #fff;
+    margin: 0 4px 4px 0;
     display: inline-block;
     font-weight: normal;
-    &:hover {
-      background-color: #d9d9d9;
-    }
   }
-
+  .summary-source {
+    background-color: #e4e5e6;
+    padding: 7px;
+    border-radius: 4px;
+    color: #272e36;
+    margin: 0 2px 5px 0;
+    display: inline-block;
+    font-weight: 600;
+  } 
   span {
     .tag-close-icon {
       font-size: 10px;
@@ -188,17 +192,26 @@ a.tag {
     word-break: break-word;
 
     .p-tag {
-      /* TODO: Add Tag Styling similar to the app you are integrating with */
       margin: 1px !important;
       margin-bottom: 2px !important;
-      background-color: #fff;
-      border: 1px solid #585858;
+      background-color: #5995cd;
       padding: 1px 5px 2px;
-      border-radius: 16px;
-      color: #07213a;
-      margin: 0 2px 5px 0;
+      border-radius: 24px;
+      color: #fff;
+      margin: 0 4px 4px 0;
       display: inline-block;
       font-weight: normal;
+    }
+    .p-source {
+      margin: 1px !important;
+      margin-bottom: 2px !important;
+      background-color: #e4e5e6;
+      padding: 4px 10px;
+      border-radius: 4px;
+      color: #272e36;
+      margin: 0 2px 5px 0;
+      display: inline-block;
+      font-weight: 600;
     }
   }
 
@@ -289,4 +302,22 @@ a.tag {
   }
 }
 
-/* TODO: Add new custom styling here or modify needed respective styles above */
+.description {
+  width: 100%;
+}
+
+.show-threatquotient {
+  display: inline;
+}
+.show-tq {
+  display: none;
+}
+
+@media (max-width: 307px) {
+  .show-threatquotient {
+    display: none;
+  }
+  .show-tq {
+    display: inline;
+  }
+}

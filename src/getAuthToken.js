@@ -19,12 +19,12 @@ const getAuthToken = async (options, requestWithDefaults) => {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
+      body: {
         email: options.username,
         password: options.password,
         grant_type: 'password',
         client_id: options.client
-      }),
+      },
       json: true,
       authRequest: true
     })

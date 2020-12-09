@@ -1,25 +1,9 @@
 const fp = require('lodash/fp');
-const {} = require('./constants')
-const {
-  POLARITY_TYPE_TO_THREATCONNECT,
-  SUBMISSION_LABELS,
-  INDICATOR_TYPES,
-  ENTITY_DISPLAY_TYPES
-} = require('./constants');
+const { ENTITY_DISPLAY_TYPES } = require('./constants');
+const threatQConfig = require('../config/threatq.config');
 
 const submitItems = async (
-  {
-    newIocsToSubmit,
-    foundEntities,
-    description,
-    score,
-    status,
-    tags,
-    sources,
-    attributes,
-
-    // TODO: Add Submission Options keys here from ../components/block.js
-  },
+  { newIocsToSubmit, foundEntities, description, status, score, sources, tags },
   requestWithDefaults,
   options,
   Logger,
@@ -28,14 +12,18 @@ const submitItems = async (
   try {
     const createdItems = await createItems(
       newIocsToSubmit,
-      // TODO: add submission option keys here
+      description,
+      status,
+      sources,
       options,
       requestWithDefaults,
       Logger
     );
 
-    // TODO: Verify a separate step for creating tags is needed and delete this function if not
-    // await createTags(newIocsToSubmit, submitTags, options, requestWithDefaults, Logger);
+    await Promise.all([
+      createTags(createdItems, tags, options, requestWithDefaults, Logger),
+      addScore(createdItems, score, options, requestWithDefaults, Logger)
+    ]);
 
     return callback(null, {
       foundEntities: [...createdItems, ...foundEntities]
@@ -59,98 +47,83 @@ const submitItems = async (
 
 const createItems = async (
   newIocsToSubmit,
-  // TODO: add submission option keys here
+  description,
+  status,
+  sources,
   options,
   requestWithDefaults,
   Logger
 ) => {
-  await requestWithDefaults({
-    method: 'POST',
-    uri: `${options.url}/api/indicators`,
-    headers: { 'Content-Type': 'application/json' },
-    body: [
-      {
-        class: 'network',
-        value: '115.47.67.155',
-        type_id: 10, // TODO: check to see if this is the score property rather than manual_score
-        description: 'desc', //TODO: verify this is actually being submitted
-        manual_score: 2, //TODO: verify this is actually being submitted
-        status_id: 2,
-        /*
-        {
-          1: 'Active',
-          2: 'Expired',
-          3: 'Indirect',
-          4: 'Review',
-          5: 'Whitelisted'
-        }
-        */
-        sources: [
-          // searchable list like tags
-          {
-            name: 'Source',
-            tlp: {
-              name: 'GREEN'
-            }
-          }
-        ],
-        attributes: [
-          {
-            name: 'Confidence',
-            value: 'High',
-            sources: [
-              {
-                name: 'Source',
-                tlp: {
-                  name: 'GREEN'
-                }
-              }
-            ]
-          },
-          {
-            name: 'Port',
-            value: '4000'
-          },
-          {
-            name: 'Scheme',
-            value: 'https'
-          }
-        ],
-        //TODO: Verify tags submit correctly
-        tags: [
-          {
-            id: 23,
-            name: 'another tag'
-          },
-          {
-            name: 'New Test tag from int'
-          }
-        ]
-      }
-    ],
-    options
-  });
+  const createdIndicators = fp.getOr(
+    [],
+    'body.data',
+    await requestWithDefaults({
+      method: 'POST',
+      uri: `${options.url}/api/indicators`,
+      headers: { 'Content-Type': 'application/json' },
+      body: fp.map(
+        ({ value }) => ({
+          class: 'network',
+          value,
+          type_id: threatQConfig.threatQIndicatorTypes[fp.toLower('IPv4')],
+          description,
+          status_id: status,
+          sources
+        }),
+        newIocsToSubmit
+      ),
+      options
+    })
+  );
 
-  return fp.map((createdEntity) => ({
-    ...createdEntity,
-    displayedType: ENTITY_DISPLAY_TYPES[createdEntity.type]
-  }))(newIocsToSubmit);
+  const createdItems = fp.map((createdEntity) => {
+    const createdIndicator = fp.find(
+      ({ value }) => value === createdEntity.value,
+      createdIndicators
+    );
+    return {
+      ...createdIndicator,
+      ...createdEntity,
+      displayedType: ENTITY_DISPLAY_TYPES[createdEntity.type]
+    };
+  })(newIocsToSubmit);
+
+  return createdItems;
 };
 
-const createTags = (newIocsToSubmit, submitTags, options, requestWithDefaults) =>
-  // TODO: Verify a separate step for creating is needed and delete this function if not
+const createTags = (createdItems, submitTags, options, requestWithDefaults) =>
   Promise.all(
     fp.flatMap(
-      async (entity) =>
+      (indicator) =>
         fp.map(
           (tag) =>
             requestWithDefaults({
-              // TODO: Add request options for creating tags
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+
+              uri: `${options.url}/api/indicators/${indicator.id}/tags`,
+              body: tag,
               options
             }),
           submitTags
         ),
-      newIocsToSubmit
+      createdItems
+    )
+  );
+
+const addScore = (createdItems, manual_score, options, requestWithDefaults) =>
+  Promise.all(
+    fp.map(
+      (indicator) =>
+        requestWithDefaults({
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+
+          uri: `${options.url}/api/indicator/${indicator.id}/scores`,
+          body: { manual_score },
+          options
+        }),
+      createdItems
     )
   );
 
