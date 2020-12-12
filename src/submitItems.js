@@ -62,10 +62,10 @@ const createItems = async (
       uri: `${options.url}/api/indicators`,
       headers: { 'Content-Type': 'application/json' },
       body: fp.map(
-        ({ value }) => ({
+        ({ value, type }) => ({
           class: 'network',
           value,
-          type_id: threatQConfig.threatQIndicatorTypes[fp.toLower('IPv4')],
+          type_id: threatQConfig.threatQIndicatorTypes[fp.toLower(type)],
           description,
           status_id: status,
           sources
