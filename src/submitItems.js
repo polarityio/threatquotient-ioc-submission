@@ -1,19 +1,9 @@
 const fp = require('lodash/fp');
-const {} = require('./constants')
-const {
-  POLARITY_TYPE_TO_THREATCONNECT,
-  SUBMISSION_LABELS,
-  INDICATOR_TYPES,
-  ENTITY_DISPLAY_TYPES
-} = require('./constants');
+const { ENTITY_DISPLAY_TYPES } = require('./constants');
+const threatQConfig = require('../config/threatq.config');
 
 const submitItems = async (
-  {
-    newIocsToSubmit,
-    foundEntities,
-    submitTags 
-    // TODO: Add Submission Options keys here from ../components/block.js
-  },
+  { newIocsToSubmit, foundEntities, description, status, score, sources, tags },
   requestWithDefaults,
   options,
   Logger,
@@ -22,14 +12,18 @@ const submitItems = async (
   try {
     const createdItems = await createItems(
       newIocsToSubmit,
-      // TODO: add submission option keys here
+      description,
+      status,
+      sources,
       options,
       requestWithDefaults,
       Logger
     );
 
-    // TODO: Verify a separate step for creating tags is needed and delete this function if not
-    await createTags(newIocsToSubmit, submitTags, options, requestWithDefaults, Logger);
+    await Promise.all([
+      createTags(createdItems, tags, options, requestWithDefaults, Logger),
+      addScore(createdItems, score, options, requestWithDefaults, Logger)
+    ]);
 
     return callback(null, {
       foundEntities: [...createdItems, ...foundEntities]
@@ -53,44 +47,83 @@ const submitItems = async (
 
 const createItems = async (
   newIocsToSubmit,
-  // TODO: add submission option keys here
+  description,
+  status,
+  sources,
   options,
   requestWithDefaults,
   Logger
 ) => {
-  await Promise.all(
-    fp.map(
-      (entity) =>
-        requestWithDefaults({
-          // TODO: Replace with request options for creating your data type
-          options
+  const createdIndicators = fp.getOr(
+    [],
+    'body.data',
+    await requestWithDefaults({
+      method: 'POST',
+      uri: `${options.url}/api/indicators`,
+      headers: { 'Content-Type': 'application/json' },
+      body: fp.map(
+        ({ value, type }) => ({
+          class: 'network',
+          value,
+          type_id: threatQConfig.threatQIndicatorTypes[fp.toLower(type)],
+          description,
+          status_id: status,
+          sources
         }),
-      newIocsToSubmit
-    )
+        newIocsToSubmit
+      ),
+      options
+    })
   );
-  return fp.map((createdEntity) => ({
-    ...createdEntity,
-    linkType: INDICATOR_TYPES[POLARITY_TYPE_TO_THREATCONNECT[createdEntity.type]],
-    canDelete: true,
-    resultsFound: true,
-    displayedType: ENTITY_DISPLAY_TYPES[createdEntity.type]
-  }))(newIocsToSubmit);
+
+  const createdItems = fp.map((createdEntity) => {
+    const createdIndicator = fp.find(
+      ({ value }) => value === createdEntity.value,
+      createdIndicators
+    );
+    return {
+      ...createdIndicator,
+      ...createdEntity,
+      displayedType: ENTITY_DISPLAY_TYPES[createdEntity.type]
+    };
+  })(newIocsToSubmit);
+
+  return createdItems;
 };
 
-const createTags = (newIocsToSubmit, submitTags, options, requestWithDefaults) =>
-  // TODO: Verify a separate step for creating is needed and delete this function if not
+const createTags = (createdItems, submitTags, options, requestWithDefaults) =>
   Promise.all(
     fp.flatMap(
-      async (entity) =>
+      (indicator) =>
         fp.map(
           (tag) =>
             requestWithDefaults({
-              // TODO: Add request options for creating tags
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+
+              uri: `${options.url}/api/indicators/${indicator.id}/tags`,
+              body: tag,
               options
             }),
           submitTags
         ),
-      newIocsToSubmit
+      createdItems
+    )
+  );
+
+const addScore = (createdItems, manual_score, options, requestWithDefaults) =>
+  Promise.all(
+    fp.map(
+      (indicator) =>
+        requestWithDefaults({
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+
+          uri: `${options.url}/api/indicator/${indicator.id}/scores`,
+          body: { manual_score },
+          options
+        }),
+      createdItems
     )
   );
 

@@ -9,7 +9,8 @@ const deleteItem = async (
 ) => {
   try {
     await requestWithDefaults({
-      // TODO: Add request options for deletion logic
+      method: 'DELETE',
+      uri: `${options.url}/api/indicators/${entity.id}`,
       options
     });
   } catch (error) {

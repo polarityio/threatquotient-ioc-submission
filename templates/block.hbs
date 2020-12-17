@@ -1,7 +1,7 @@
 <div class={{if (and (not (or newIocs.length newIocsToSubmit.length)) interactionDisabled) "modal-open"}}>
   {{#if foundEntities.length}}
     <h1 class="p-title">
-      {{fa-icon "info-circle" size="sm"}} Already In ___
+      {{fa-icon "info-circle" size="sm"}} Already In ThreatQuotient
     </h1>
     {{#if isDeleting}}
       <div class="ioc-deletion-modal">
@@ -9,7 +9,7 @@
           <span class="p-key">
             <span class="p-value"><em><b>DANGER:</b></em></span>
             <div>
-              <span>Deleting an indicator cannot be undone and will remove all data for the indicator in ___.</span>
+              <span>Deleting an indicator cannot be undone and will remove all data for the indicator in ThreatQuotient.</span>
             </div>
             <div>
               <span>Are you sure you want to delete the indicator <em><b>{{entityToDelete.value}}</b></em>?</span>
@@ -28,7 +28,7 @@
           <tr>
             <td>
               {{#if (not interactionDisabled)}}
-                <a href="{{details.url}}/TODO: ioc url goes here">
+                <a href="{{details.url}}/indicators/{{foundEntity.id}}/details">
                   {{foundEntity.value}} {{fa-icon "external-link" fixedWidth=true class="external-link-icon"}}
                 </a>
               {{else}}
@@ -38,16 +38,18 @@
             <td class="type">
               <span>{{foundEntity.displayedType}}</span>
             </td>
-            <td class="icon">
-              <button
-                class="no-style-button delete"
-                {{action "initiateItemDeletion" foundEntity}}
-                title="Delete IOC from ___"
-                disabled={{interactionDisabled}}
-              >
-                {{fa-icon "trash" fixedWidth=true}}
-              </button>
-            </td>
+            {{#if block.userOptions.allowDelete}}
+              <td class="icon">
+                <button
+                  class="no-style-button delete"
+                  {{action "initiateItemDeletion" foundEntity}}
+                  title="Delete IOC from ThreatQuotient"
+                  disabled={{interactionDisabled}}
+                >
+                  {{fa-icon "trash" fixedWidth=true}}
+                </button>
+              </td>
+            {{/if}}
           </tr>
         {{/each}}
       </tbody>
@@ -74,10 +76,10 @@
   {{/if}}
 
   {{#if (or newIocs.length newIocsToSubmit.length)}}
-    <div> TODO: Make sure this div doesn't cause styling issues
+    <div>
       <div class="title-with-button">
         <h1 class="p-title">
-          {{fa-icon "sparkles" size="sm" fixedWidth=true}} Not Currently In ___
+          {{fa-icon "sparkles" size="sm" fixedWidth=true}} Not Currently In ThreatQuotient
         </h1>
         {{#if newIocs.length}}
           <button
@@ -126,7 +128,19 @@
     <div>
       <div class="title-with-button">
         <h1 class="p-title">
-          {{fa-icon "upload" size="sm" fixedWidth=true}} To Be Submitted to ___
+          {{fa-icon "upload" size="sm" fixedWidth=true}} To Be Submitted to&nbsp;
+        {{#if newIocsToSubmit.length}}
+          <span class="show-threatquotient">
+            ThreatQuotient
+          </span>
+          <span class="show-tq">
+            TQ
+          </span>
+        {{else}}
+          <span>
+            ThreatQuotient
+          </span>
+        {{/if}}
         </h1>
         {{#if newIocsToSubmit.length}}
           <button
@@ -181,7 +195,115 @@
         {{fa-icon "cog" size="sm" fixedWidth=true}} Submission Options
       </h1>
 
-      {{!-- TODO: Add selection-container div's with Submission Options needed here --}}
+      <div class="select-container">
+        <span class="p-value">Description: &nbsp;</span>
+        <input
+          type="text"
+          class="description"
+          placeholder="Enter description..."
+          onchange={{action (mut description) value="target.value"}}
+          value={{description}}
+          disabled={{interactionDisabled}}
+        />
+      </div>
+
+      <div class="select-container">
+        <span class="p-value">Status: </span>
+        <select class="w-100" onchange={{action (mut submitStatus) value="target.value"}} disabled={{interactionDisabled}}>
+          <option value="1">Active</option>
+          <option value="2">Expired</option>
+          <option value="3">Indirect</option>
+          <option value="4">Review</option>
+          <option value="5">Whitelisted</option>
+        </select>
+      </div>
+
+      <div class="select-container">
+        <span class="p-value">Score: </span>
+        <select class="w-100" onchange={{action (mut submitScore) value="target.value"}} disabled={{interactionDisabled}}>
+          <option value="10">10 - Very High</option>
+          <option value="9">9 - High</option>
+          <option value="8">8 - Medium</option>
+          <option value="7">7 - Medium</option>
+          <option value="6">6 - Low</option>
+          <option value="5">5 - Low</option>
+          <option value="4">4 - Very Low</option>
+          <option value="3">3 - Very Low</option>
+          <option value="2">2 - Very Low</option>
+          <option value="1">1 - Very Low</option>
+          <option value="0">0 - Very Low/Generated Score</option>
+        </select>
+      </div>
+      
+      <div class="tag-container">
+        <h1 class="p-title">
+          {{fa-icon "tags" fixedWidth=true}} Sources
+        </h1>
+        {{#if (eq selectedSources.length 0)}}
+          <span class="p-footnote mb-2 mt-2">
+            <span><em>&nbsp; No Sources &nbsp;</em></span>
+          </span>
+        {{else}}
+          {{#each (take maxTagsInBlock selectedSources) as |source sourceIndex|}}
+            <span class="tag link-tag d-inline-flex align-items-center">
+              <span class="text-container summary-source">
+                {{source.name}}
+                {{#if (not interactionDisabled)}}
+                  <span class="remove-icon-container" {{action "deleteSource" source}}>
+                    {{fa-icon "times" class="tag-close-icon" fixedWidth=true}}
+                  </span>
+                {{/if}}
+              </span>
+            </span>
+          {{/each}}
+        {{/if}}
+        {{#unless (or editingSources interactionDisabled)}}
+          <button class="open-modal-btn" {{action "editSources"}}>
+            {{fa-icon "plus" class="open-modal-btn-icon" fixedWidth=true}}
+          </button>
+        {{/unless}}
+
+        {{#if editingSources}}
+          <div class="show-tag-modal">
+            <div>
+              {{#power-select-multiple
+                triggerClass="form-control"
+                selected=selectedSource
+                options=existingSources
+                searchEnabled=true
+                search=(action "searchSources")
+                placeholder="Search Sources"
+                searchField="name"
+                searchMessage="Loading Sources ..."
+                loadingMessage="Loading Sources ..."
+                searchPlaceholder="Search Sources"
+                closeOnSelect=true
+                disabled=interactionDisabled
+                onOpen=(action "searchSources" "")
+                onChange=(action (mut selectedSource)) as |source|
+              }}
+                <span
+                  class="p-source"
+                  style="word-break: break-word; margin: 10px 0; border: 1px solid #ababab; background-color: #e4e5e6; padding: 7px;  line-height: 1.2em; font-size: 12px; box-shadow: 3px 3px 3px #888888; border-radius: 4px; color: #272e36; display: inline-block; font-weight: 600;"
+                >
+                  {{source.name}}
+                  <span style="position: relative; top: 1px">
+                    {{#if source.isNew}}
+                      {{fa-icon "plus-circle" fixedWidth=true}}
+                    {{else}}
+                      {{fa-icon "check-circle" fixedWidth=true}}
+                    {{/if}}
+                  </span>
+                </span>
+              {{/power-select-multiple}}
+            </div>
+            <div class="modal-buttons">
+              <button class="tag-btn" {{action "editSources"}} disabled={{interactionDisabled}}>Cancel</button>
+              <button class="tag-btn" {{action "addSources"}} disabled={{interactionDisabled}}>Add Sources</button>
+            </div>
+          </div>
+        {{/if}}
+      </div>
       <div class="tag-container">
         <h1 class="p-title">
           {{fa-icon "tags" fixedWidth=true}} Tags
@@ -192,29 +314,16 @@
           </span>
         {{else}}
           {{#each (take maxTagsInBlock selectedTags) as |tag tagIndex|}}
-            {{#if tag.isNew}}
-              <span class="tag link-tag d-inline-flex align-items-center">
-                <span class="text-container summary-tag {{unless interactionDisabled "rounded-borders"}}">
-                  {{tag.name}}
-                  {{#if (not interactionDisabled)}}
-                    <span class="remove-icon-container" {{action "deleteTag" tag}}>
-                      {{fa-icon "times" class="tag-close-icon" fixedWidth=true}}
-                    </span>
-                  {{/if}}
-                </span>
+            <span class="tag link-tag d-inline-flex align-items-center">
+              <span class="text-container summary-tag {{unless interactionDisabled "rounded-borders"}}">
+                {{tag.name}}
+                {{#if (not interactionDisabled)}}
+                  <span class="remove-icon-container" {{action "deleteTag" tag}}>
+                    {{fa-icon "times" class="tag-close-icon" fixedWidth=true}}
+                  </span>
+                {{/if}}
               </span>
-            {{else}}
-              <a href="{{details.url}} TODO: tag url goes here" class="tag link-tag d-inline-flex align-items-center">
-                <span class="text-container summary-tag {{unless interactionDisabled "rounded-borders"}}">
-                  {{tag.name}}
-                  {{#if (not interactionDisabled)}}
-                    <span class="remove-icon-container" {{action "deleteTag" tag}}>
-                      {{fa-icon "times" class="tag-close-icon" fixedWidth=true}}
-                    </span>
-                  {{/if}}
-                </span>
-              </a>
-            {{/if}}
+            </span>
           {{/each}}
         {{/if}}
         {{#unless (or editingTags interactionDisabled)}}
@@ -244,7 +353,8 @@
               }}
                 <span
                   class="p-tag"
-                  style="word-break: break-word; margin: 10px 0; display:inline-block; line-height: 1.2em; font-size: 12px; box-shadow: 3px 3px 3px #888888; padding: 4px; border-radius: 4px;background-color: #fff; border: 1px solid #f97b06; padding: 1px 5px 2px 7px; border-radius: 16px; color: #07213a; 5px 0;"
+                  style="word-break: break-word; margin: 10px 0; background-color: #5995cd; line-height: 1.2em; font-size: 12px; line-height: 1.2em; font-size: 12px; box-shadow: 3px 3px 3px #888888; padding: 5px 6px 6px 10px; border-radius: 24px; color: #fff; display: inline-block; font-weight: normal;"
+                
                 >
                   {{tag.name}}
                   <span style="position: relative; top: 1px">
@@ -293,6 +403,6 @@
 </div>
 {{#if (and (not foundEntities.length) (not (or newIocs.length newIocsToSubmit.length)))}}
   <div class="note">
-    <span class="p-key"><em>All Already In ___ IOCs have been deleted</em></span>
+    <span class="p-key"><em>All Already In ThreatQuotient IOCs have been deleted</em></span>
   </div>
 {{/if}}

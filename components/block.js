@@ -2,11 +2,13 @@ polarity.export = PolarityComponent.extend({
   details: Ember.computed.alias('block.data.details'),
   maxUniqueKeyNumber: Ember.computed.alias('details.maxUniqueKeyNumber'),
   url: Ember.computed.alias('details.url'),
-  // TODO: Submission Options Initial Variables goes here
   foundEntities: [],
   newIocs: [],
   newIocsToSubmit: [],
   selectedTags: [],
+  selectedSources: [],
+  submitStatus: 1,
+  submitScore: 10,
   deleteMessage: '',
   deleteErrorMessage: '',
   deleteIsRunning: false,
@@ -17,6 +19,7 @@ polarity.export = PolarityComponent.extend({
   createIsRunning: false,
   selectedTag: [],
   editingTags: false,
+  editingSources: false,
   maxTagsInBlock: 10,
   interactionDisabled: Ember.computed('isDeleting', 'createIsRunning', function () {
     return this.get('isDeleting') || this.get('createIsRunning');
@@ -31,8 +34,6 @@ polarity.export = PolarityComponent.extend({
       'foundEntities',
       this.get(`details.foundEntities${this.get('maxUniqueKeyNumber')}`)
     );
-
-    // TODO Add any other properties here that are either objects or arrays that will be modified in the course of using this integration
 
     this.set('selectedTags', [
       {
@@ -57,8 +58,6 @@ polarity.export = PolarityComponent.extend({
           this.get(`details.foundEntities${this.get('maxUniqueKeyNumber')}`)
         );
 
-        // TODO Add any other properties here that are either objects or arrays that will be modified in the course of using this integration
-
         this.set('newIocsToSubmit', []);
       }
     })
@@ -74,7 +73,7 @@ polarity.export = PolarityComponent.extend({
         data: {
           action: 'SEARCH_TAGS',
           term,
-          selectedTags: this.get('selectedTags')
+          selectedValues: this.get('selectedTags')
         }
       })
       .then(({ tags }) => {
@@ -102,8 +101,46 @@ polarity.export = PolarityComponent.extend({
         resolve();
       });
   },
+  searchSources: function (term, resolve, reject) {
+    const outerThis = this;
+    outerThis.set('createMessage', '');
+    outerThis.set('createErrorMessage', '');
+    outerThis.get('block').notifyPropertyChange('data');
+
+    outerThis
+      .sendIntegrationMessage({
+        data: {
+          action: 'SEARCH_SOURCES',
+          term,
+          selectedValues: this.get('selectedSources')
+        }
+      })
+      .then(({ sources }) => {
+        outerThis.set(
+          'existingSources',
+          [...(term ? [{ name: term, isNew: true }] : [])].concat(sources)
+        );
+      })
+      .catch((err) => {
+        outerThis.set(
+          'createErrorMessage',
+          'Search Sources Failed: ' +
+            (err &&
+              (err.detail || err.err || err.message || err.title || err.description)) ||
+            'Unknown Reason'
+        );
+      })
+      .finally(() => {
+        outerThis.get('block').notifyPropertyChange('data');
+        setTimeout(() => {
+          outerThis.set('createMessage', '');
+          outerThis.set('createErrorMessage', '');
+          outerThis.get('block').notifyPropertyChange('data');
+        }, 5000);
+        resolve();
+      });
+  },
   actions: {
-    // TODO: Add boolean value toggling action functions here
     initiateItemDeletion: function (entity) {
       this.set('isDeleting', true);
       this.set('entityToDelete', entity);
@@ -197,7 +234,6 @@ polarity.export = PolarityComponent.extend({
           condition: () => !outerThis.get('newIocsToSubmit').length,
           message: 'No Items to Submit...'
         }
-        // TODO: add other initially evaluatable error conditions and messages here
       ];
 
       const paramErrorMessages = possibleParamErrors.reduce(
@@ -225,9 +261,12 @@ polarity.export = PolarityComponent.extend({
           data: {
             action: 'SUBMIT_ITEMS',
             newIocsToSubmit: outerThis.get('newIocsToSubmit'),
-            // TODO: Add Submission option properties here
             foundEntities: outerThis.get('foundEntities'),
-            submitTags: outerThis.get('selectedTags')
+            description: outerThis.get('description'),
+            status: outerThis.get('submitStatus'),
+            score: outerThis.get('submitScore'),
+            sources: outerThis.get('selectedSources'),
+            tags: outerThis.get('selectedTags')
           }
         })
         .then(({ foundEntities }) => {
@@ -287,8 +326,41 @@ polarity.export = PolarityComponent.extend({
       this.set('selectedTags', selectedTags.concat(newSelectedTags));
       this.set('selectedTag', []);
       this.set('editingTags', false);
-    }
+    },
+    editSources: function () {
+      this.toggleProperty('editingSources');
+      this.get('block').notifyPropertyChange('data');
+    },
+    deleteSource: function (SourceToDelete) {
+      this.set(
+        'selectedSources',
+        this.get('selectedSources').filter(
+          (selectedSource) => selectedSource.name !== SourceToDelete.name
+        )
+      );
+    },
+    searchSources: function (term) {
+      return new Ember.RSVP.Promise((resolve, reject) => {
+        Ember.run.debounce(this, this.searchSources, term, resolve, reject, 600);
+      });
+    },
+    addSources: function (sources) {
+      const selectedSource = this.get('selectedSource');
+      const selectedSources = this.get('selectedSources');
 
-    // TODO: Add logic based action functions here
+      this.set('createMessage', '');
+
+      let newSelectedSources = selectedSource.filter(
+        (source) =>
+          !selectedSources.some(
+            (selectedSource) =>
+              source.name.toLowerCase().trim() === selectedSource.name.toLowerCase().trim()
+          )
+      );
+
+      this.set('selectedSources', selectedSources.concat(newSelectedSources));
+      this.set('selectedSource', []);
+      this.set('editingSources', false);
+    }
   }
 });
