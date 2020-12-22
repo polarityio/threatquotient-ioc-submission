@@ -20,10 +20,10 @@ const submitItems = async (
       Logger
     );
 
-    await Promise.all([
-      createTags(createdItems, tags, options, requestWithDefaults, Logger),
-      addScore(createdItems, score, options, requestWithDefaults, Logger)
-    ]);
+    // await Promise.all([
+    await createTags(createdItems, tags, options, requestWithDefaults, Logger);
+      // addScore(createdItems, score, options, requestWithDefaults, Logger)
+    // ]);
 
     return callback(null, {
       foundEntities: [...createdItems, ...foundEntities]
