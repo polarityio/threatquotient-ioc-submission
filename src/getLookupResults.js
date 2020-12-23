@@ -1,39 +1,31 @@
 const fp = require('lodash/fp');
 
 const { ENTITY_DISPLAY_TYPES } = require('./constants');
-const threatQConfig = require('../config/threatq.config');
 
-const { partitionFlatMap, splitOutIgnoredIps } = require('./dataTransformations');
+const { splitOutIgnoredIps } = require('./dataTransformations');
 const createLookupResults = require('./createLookupResults');
 
-const getLookupResults = (entities, options, requestWithDefaults, Logger) =>
-  partitionFlatMap(
-    async (_entitiesPartition) => {
-      const { entitiesPartition, ignoredIpLookupResults } = splitOutIgnoredIps(
-        _entitiesPartition
-      );
+const getLookupResults = async (entities, options, requestWithDefaults, Logger) => {
+  const { entitiesPartition, ignoredIpLookupResults } = splitOutIgnoredIps(entities);
 
-      const foundEntities = await _getFoundEntities(
-        entitiesPartition,
-        options,
-        requestWithDefaults,
-        Logger
-      );
-
-      const lookupResults = createLookupResults(
-        options,
-        entitiesPartition,
-        foundEntities,
-        Logger
-      );
-
-      Logger.trace({ lookupResults, foundEntities }, 'Lookup Results');
-
-      return lookupResults.concat(ignoredIpLookupResults);
-    },
-    20,
-    entities
+  const foundEntities = await _getFoundEntities(
+    entitiesPartition,
+    options,
+    requestWithDefaults,
+    Logger
   );
+
+  const lookupResults = createLookupResults(
+    options,
+    entitiesPartition,
+    foundEntities,
+    Logger
+  );
+
+  Logger.trace({ lookupResults, foundEntities }, 'Lookup Results');
+
+  return lookupResults.concat(ignoredIpLookupResults);
+};
 
 
 const _getFoundEntities = async (
