@@ -4,8 +4,9 @@ const reduce = require('lodash/fp/reduce').convert({ cap: false });
 const validateOptions = (options, callback) => {
   const stringOptionsErrorMessages = {
     url: 'You must provide a valid URL from your ThreatConnect Account',
-    apiKey: 'You must provide a valid API Key from your ThreatConnect Account'
-    // TODO: Add new keys and message here as needed
+    username: 'You must provide a valid Username from your ThreatConnect Account',
+    password: 'You must provide a valid Password from your ThreatConnect Account',
+    client: 'You must provide a valid Client ID from your ThreatConnect Account',
   };
 
   const stringValidationErrors = _validateStringOptions(
@@ -15,7 +16,6 @@ const validateOptions = (options, callback) => {
 
   const urlValidationError = _validateUrlOption(options.url);
 
-  // TODO: add any other valitation for Polarity Options needed here
   callback(null, stringValidationErrors.concat(urlValidationError));
 };
 
