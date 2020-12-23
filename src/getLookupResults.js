@@ -68,7 +68,7 @@ const _getFoundEntities = async (
 
   return fp.map((foundEntity) => {
     const entityFromUser = fp.find(
-      ({ value }) => value === foundEntity.value,
+      ({ value }) => fp.toLower(value) === fp.toLower(foundEntity.value),
       entitiesPartition
     );
     return {
@@ -115,8 +115,6 @@ const _getEntityType = (entity) =>
     ? 'IP Address'
     : entity.isIPv6
     ? 'IPv6 Address'
-    : entity.type === 'IPv4CIDR'
-    ? 'CIDR Block'
     : entity.isDomain
     ? 'FQDN'
     : entity.isURL
@@ -129,8 +127,8 @@ const _getEntityType = (entity) =>
     ? 'MD5'
     : entity.isEmail
     ? 'Email Address'
-    : '';
- 
+    : 'CIDR Block';
+
 
 module.exports = {
   getLookupResults

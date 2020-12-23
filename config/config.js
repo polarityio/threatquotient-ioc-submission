@@ -3,7 +3,7 @@ module.exports = {
   acronym: 'TQ+',
   description:
     'Polarity integration that connects to the ThreatQuotient threat intelligence platform using the IOC Submission interface format.',
-  entityTypes: ['domain', 'IPv4', 'IPv6', 'email', 'MD5', 'SHA1', 'SHA256'],
+  entityTypes: ['domain', 'IPv4', 'IPv6', 'IPv4CIDR', 'email', 'MD5', 'SHA1', 'SHA256'],
   styles: ['./styles/styles.less'],
   block: {
     component: {
