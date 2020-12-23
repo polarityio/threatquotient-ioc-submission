@@ -47,15 +47,20 @@ const _getFoundEntities = async (
     'body.data',
     await requestWithDefaults({
       method: 'POST',
-      uri: `${options.url}/api/search/advanced`,
+      uri: `${options.url}/api/indicators/query`,
       qs: {
-        limit: 10
+        limit: 10,
+        offset: 0,
+        sort: '-created'
       },
       headers: {
         'Content-Type': 'application/json'
       },
       body: {
-        indicators: _createSearchQuery(entitiesPartition, options)
+        criteria: {},
+        filters: {
+          '+or': _createSearchQuery(entitiesPartition, options)
+        }
       },
       options
     })
@@ -76,21 +81,55 @@ const _getFoundEntities = async (
 
 const _createSearchQuery = (entityObjects, options) =>
   fp.map(
-    (entityObj) => [
-      {
-        field: 'indicator_value',
-        operator: 'is',
-        value: entityObj.value
-      },
-      {
-        field: 'indicator_type',
-        operator: 'is',
-        value: threatQConfig.threatQIndicatorTypes[fp.toLower(entityObj.type)]
-      }
-    ],
+    (entityObj) => ({
+      '+or': [
+        {
+          '+and': [
+            {
+              '+or': [
+                {
+                  type_name: _getEntityType(entityObj)
+                }
+              ]
+            },
+            {
+              '+and': [
+                {
+                  '+or': [
+                    {
+                      value: entityObj.value
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }),
     entityObjects
   );
 
+const _getEntityType = (entity) =>
+  entity.isIPv4
+    ? 'IP Address'
+    : entity.isIPv6
+    ? 'IPv6 Address'
+    : entity.type === 'IPv4CIDR'
+    ? 'CIDR Block'
+    : entity.isDomain
+    ? 'FQDN'
+    : entity.isURL
+    ? 'URL'
+    : entity.isSHA1
+    ? 'SHA1'
+    : entity.isSHA256
+    ? 'SHA256'
+    : entity.isMD5
+    ? 'MD5'
+    : entity.isEmail
+    ? 'Email Address'
+    : '';
  
 
 module.exports = {
