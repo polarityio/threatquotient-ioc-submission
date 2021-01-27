@@ -3,10 +3,10 @@ const reduce = require('lodash/fp/reduce').convert({ cap: false });
 
 const validateOptions = (options, callback) => {
   const stringOptionsErrorMessages = {
-    url: 'You must provide a valid URL from your ThreatConnect Account',
-    username: 'You must provide a valid Username from your ThreatConnect Account',
-    password: 'You must provide a valid Password from your ThreatConnect Account',
-    client: 'You must provide a valid Client ID from your ThreatConnect Account',
+    url: 'You must provide a valid URL from your ThreatQuotient Account',
+    username: 'You must provide a valid Username from your ThreatQuotient Account',
+    password: 'You must provide a valid Password from your ThreatQuotient Account',
+    client: 'You must provide a valid Client ID from your ThreatQuotient Account',
   };
 
   const stringValidationErrors = _validateStringOptions(
