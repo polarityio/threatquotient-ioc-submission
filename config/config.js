@@ -81,7 +81,7 @@ module.exports = {
         'If checked, users will be able to delete indicators from ThreatQuotient.',
       default: false,
       type: 'boolean',
-      userCanEdit: true,
+      userCanEdit: false,
       adminOnly: false
     }
   ]
