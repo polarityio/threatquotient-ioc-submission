@@ -31,7 +31,7 @@ const submitItems = async (
   } catch (error) {
     Logger.error(
       error,
-      { detail: 'Failed to Create IOC in ThreatConnect' },
+      { detail: 'Failed to Create IOC in ThreatQuotient' },
       'IOC Creation Failed'
     );
     return callback({

@@ -38,7 +38,7 @@ module.exports = {
       key: 'url',
       name: 'ThreatQuotient Server URL',
       description:
-        'The URL for your ThreatQ server which should include the schema (i.e., http, https) and port if required',
+        'The URL for your ThreatQ server which should include the scheme (i.e., http, https) and port if required',
       default: '',
       type: 'text',
       userCanEdit: false,
