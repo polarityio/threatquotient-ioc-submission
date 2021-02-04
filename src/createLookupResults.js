@@ -15,7 +15,7 @@ const createLookupResults = (
 
   const summary = [
     ...(foundEntities.length ? ['Entities Found'] : []),
-    ...(notFoundEntities.length ? ['New Entites'] : [])
+    ...(notFoundEntities.length ? ['New Entities'] : [])
   ];
   maxUniqueKeyNumber++;
 
