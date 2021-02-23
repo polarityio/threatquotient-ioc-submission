@@ -112,9 +112,9 @@ const _getEntityType = (entity) =>
     : entity.isURL
     ? 'URL'
     : entity.isSHA1
-    ? 'SHA1'
+    ? 'SHA-1'
     : entity.isSHA256
-    ? 'SHA256'
+    ? 'SHA-256'
     : entity.isMD5
     ? 'MD5'
     : entity.isEmail
