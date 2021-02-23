@@ -46,7 +46,6 @@ const splitOutIgnoredIps = (_entitiesPartition) => {
   };
 };
 
-// TODO: Add generally useful Data Transformations here
 
 
 module.exports = {

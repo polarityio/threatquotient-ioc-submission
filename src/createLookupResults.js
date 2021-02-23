@@ -15,7 +15,7 @@ const createLookupResults = (
 
   const summary = [
     ...(foundEntities.length ? ['Entities Found'] : []),
-    ...(notFoundEntities.length ? ['New Entites'] : [])
+    ...(notFoundEntities.length ? ['New Entities'] : [])
   ];
   maxUniqueKeyNumber++;
 
@@ -23,7 +23,7 @@ const createLookupResults = (
     {
       entity: {
         ...entities[0],
-        value: '___ IOC Submission'
+        value: 'ThreatQuotient IOC Submission'
       },
       isVolatile: true,
       data: {
@@ -60,7 +60,7 @@ const getNotFoundEntities = (foundEntities, entities) =>
       )
         ? agg.concat({
             ...entity,
-            displayedType: ENTITY_DISPLAY_TYPES[foundEntity.type]
+            displayedType: ENTITY_DISPLAY_TYPES[entity.type]
           })
         : agg,
     [],

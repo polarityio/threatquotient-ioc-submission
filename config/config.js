@@ -1,9 +1,9 @@
 module.exports = {
-  name: '___ IOC Submission',
-  acronym: '___+', // TODO: This will need to be the same acronym as the original integration, if we have one, and a '+' at the end
+  name: 'ThreatQuotient IOC Submission',
+  acronym: 'TQ+',
   description:
-    'Polarity integration that connects to the ___ threat intelligence platform using the IOC Submission interface format.',
-  entityTypes: ['domain', 'IPv4', 'IPv6', 'email', 'MD5', 'SHA1', 'SHA256'],
+    'Polarity integration that connects to the ThreatQuotient threat intelligence platform using the IOC Submission interface format.',
+  entityTypes: ['domain', 'IPv4', 'IPv6', 'IPv4CIDR', 'email', 'MD5', 'SHA1', 'SHA256'],
   styles: ['./styles/styles.less'],
   block: {
     component: {
@@ -34,33 +34,54 @@ module.exports = {
     level: 'info' //trace, debug, info, warn, error, fatal
   },
   options: [
-    // TODO: Add other options as needed
     {
       key: 'url',
-      name: '___ URL',
+      name: 'ThreatQuotient Server URL',
       description:
-        'URL of your ___ instance to include the schema (i.e., https://) and port if applicable',
+        'The URL for your ThreatQ server which should include the scheme (i.e., http, https) and port if required',
+      default: '',
+      type: 'text',
+      userCanEdit: false,
+      adminOnly: true
+    },
+    {
+      key: 'username',
+      name: 'Username',
+      description:
+        'Your TQ username you want the integration to authenticate as (typically an email address)',
       default: '',
       type: 'text',
       userCanEdit: true,
       adminOnly: false
     },
     {
-      key: 'apiKey',
-      name: 'API Key',
-      description: 'The API (secret) Key associated with the provided Access ID',
+      key: 'password',
+      name: 'Password',
+      description:
+        'The password for the provided username you want the integration to authenticate as',
       default: '',
       type: 'password',
-      userCanEdit: false,
-      adminOnly: true
+      userCanEdit: true,
+      adminOnly: false
+    },
+    {
+      key: 'client',
+      name: 'Client ID',
+      description:
+        'The Client ID for your ThreatQuotient deployment.  (accessible at https://<yourserver>/assets/js/config.js)',
+      default: '',
+      type: 'text',
+      userCanEdit: true,
+      adminOnly: false
     },
     {
       key: 'allowDelete',
       name: 'Allow IOC Deletion',
-      description: 'If checked, users will be able to delete indicators from ___.',
+      description:
+        'If checked, users will be able to delete indicators from ThreatQuotient.',
       default: false,
       type: 'boolean',
-      userCanEdit: true,
+      userCanEdit: false,
       adminOnly: false
     }
   ]
