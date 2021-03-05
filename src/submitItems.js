@@ -62,10 +62,17 @@ const createItems = async (
       uri: `${options.url}/api/indicators`,
       headers: { 'Content-Type': 'application/json' },
       body: fp.map(
-        ({ value, type }) => ({
+        ({ value, ...entity }) => ({
           class: 'network',
           value,
-          type_id: threatQConfig.threatQIndicatorTypes[fp.toLower(type)],
+          type_id:
+            threatQConfig.threatQIndicatorTypes[
+              fp.toLower(
+                fp.get('isHash', entity)
+                  ? fp.get('hashType', entity)
+                  : fp.get('type', entity)
+              )
+            ],
           description,
           status_id: status,
           sources
@@ -78,13 +85,18 @@ const createItems = async (
 
   const createdItems = fp.map((createdEntity) => {
     const createdIndicator = fp.find(
-      ({ value }) => value === createdEntity.value,
+      ({ value }) => fp.toLower(value) === fp.toLower(createdEntity.value),
       createdIndicators
     );
     return {
       ...createdIndicator,
       ...createdEntity,
-      displayedType: ENTITY_DISPLAY_TYPES[createdEntity.type]
+      displayedType: fp.get(
+        fp.get('isHash', createdEntity)
+          ? fp.get('hashType', createdEntity)
+          : fp.get('type', createdEntity),
+        ENTITY_DISPLAY_TYPES
+      )
     };
   })(newIocsToSubmit);
 

@@ -47,7 +47,12 @@ const getFoundEntities = (_foundEntities, entities) =>
     ),
     fp.map((foundEntity) => ({
       ...foundEntity,
-      displayedType: ENTITY_DISPLAY_TYPES[foundEntity.type]
+      displayedType: fp.get(
+        fp.get('isHash', foundEntity)
+          ? fp.get('hashType', foundEntity)
+          : fp.get('type', foundEntity),
+        ENTITY_DISPLAY_TYPES
+      )
     }))
   )(_foundEntities);
 
@@ -60,7 +65,12 @@ const getNotFoundEntities = (foundEntities, entities) =>
       )
         ? agg.concat({
             ...entity,
-            displayedType: ENTITY_DISPLAY_TYPES[entity.type]
+            displayedType: fp.get(
+              fp.get('isHash', entity)
+                ? fp.get('hashType', entity)
+                : fp.get('type', entity),
+              ENTITY_DISPLAY_TYPES
+            )
           })
         : agg,
     [],

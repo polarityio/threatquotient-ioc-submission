@@ -66,7 +66,12 @@ const _getFoundEntities = async (
     return {
       ...foundEntity,
       ...entityFromUser,
-      displayedType: ENTITY_DISPLAY_TYPES[entityFromUser.type]
+      displayedType: fp.get(
+        fp.get('isHash', entityFromUser)
+          ? fp.get('hashType', entityFromUser)
+          : fp.get('type', entityFromUser),
+        ENTITY_DISPLAY_TYPES
+      )
     };
   }, foundEntities);
 };
