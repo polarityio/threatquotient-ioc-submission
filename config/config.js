@@ -83,6 +83,59 @@ module.exports = {
       type: 'boolean',
       userCanEdit: false,
       adminOnly: false
+    },
+    {
+      key: 'possibleSubmissionStatuses',
+      name: 'Possible Submission Statuses',
+      description: 'This allows you to limit the possible "Status" dropdown options.',
+      default: [
+        {
+          value: '1',
+          display: 'Active'
+        },
+        {
+          value: '2',
+          display: 'Expired'
+        },
+        {
+          value: '3',
+          display: 'Indirect'
+        },
+        {
+          value: '4',
+          display: 'Review'
+        },
+        {
+          value: '5',
+          display: 'Whitelisted'
+        }
+      ],
+      type: 'select',
+      options: [
+        {
+          value: '1',
+          display: 'Active'
+        },
+        {
+          value: '2',
+          display: 'Expired'
+        },
+        {
+          value: '3',
+          display: 'Indirect'
+        },
+        {
+          value: '4',
+          display: 'Review'
+        },
+        {
+          value: '5',
+          display: 'Whitelisted'
+        }
+      ],
+      multiple: true,
+      userCanEdit: false,
+      adminOnly: true
     }
   ]
 };
