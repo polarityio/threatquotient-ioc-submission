@@ -2,7 +2,7 @@
 
 The Polarity ThreatQuotient integration allows Polarity to search your instance of ThreatQuotient to return found domains, IPs, hashes, and emails.  The integration also allows you to Create and Delete Indicators (IOCs) in bulk from ThreatQuotient.
 
-
+> ***NOTE:*** You might need to modify the `ThreatQuotient Indicator Types` values in the `./config/threatq.config.js` file in order for this integration to work properly.
 
 <div>
   <img width="400" alt="Integration Example" src="./assets/integration-example.png">
