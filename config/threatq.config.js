@@ -1,6 +1,7 @@
 module.exports = {
   /**
-   * ThreatQuotient Indicator Types
+   * ThreatQuotient Indicator Types:
+   * 
    * Each threatQ instance has different IDs for typical indicators.  The following configuration property is used
    * to setup the unique IDs for each supported indicator type.  The supported indicator types are:
    *
