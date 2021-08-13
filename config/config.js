@@ -45,6 +45,16 @@ module.exports = {
       adminOnly: true
     },
     {
+      key: 'client',
+      name: 'Client ID',
+      description:
+          'The Client ID for your ThreatQuotient deployment.  (accessible at https://<yourserver>/assets/js/config.js)',
+      default: '',
+      type: 'text',
+      userCanEdit: false,
+      adminOnly: true
+    },
+    {
       key: 'username',
       name: 'Username',
       description:
@@ -65,20 +75,10 @@ module.exports = {
       adminOnly: false
     },
     {
-      key: 'client',
-      name: 'Client ID',
-      description:
-        'The Client ID for your ThreatQuotient deployment.  (accessible at https://<yourserver>/assets/js/config.js)',
-      default: '',
-      type: 'text',
-      userCanEdit: true,
-      adminOnly: false
-    },
-    {
       key: 'allowDelete',
       name: 'Allow IOC Deletion',
       description:
-        'If checked, users will be able to delete indicators from ThreatQuotient.',
+        'If checked, users will be able to delete indicators from ThreatQuotient. This option must be set to "Users can view only"',
       default: false,
       type: 'boolean',
       userCanEdit: false,
@@ -87,7 +87,8 @@ module.exports = {
     {
       key: 'possibleSubmissionStatuses',
       name: 'Possible Submission Statuses',
-      description: 'This allows you to limit the possible "Status" dropdown options.',
+      description:
+        'Select valid "Status" options when submitting an indicator.  This option must be set to "Users can view only".',
       default: [
         {
           value: '1',
@@ -135,7 +136,7 @@ module.exports = {
       ],
       multiple: true,
       userCanEdit: false,
-      adminOnly: true
+      adminOnly: false
     }
   ]
 };
