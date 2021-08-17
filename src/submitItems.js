@@ -117,7 +117,9 @@ const createTags = (createdItems, submitTags, options, requestWithDefaults) =>
               body: tag,
               options
             }),
-          submitTags
+          submitTags.concat({
+            name: `Added By ${options.username}`
+          })
         ),
       createdItems
     )

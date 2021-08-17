@@ -45,6 +45,16 @@ module.exports = {
       adminOnly: true
     },
     {
+      key: 'client',
+      name: 'Client ID',
+      description:
+          'The Client ID for your ThreatQuotient deployment.  (accessible at https://<yourserver>/assets/js/config.js)',
+      default: '',
+      type: 'text',
+      userCanEdit: false,
+      adminOnly: true
+    },
+    {
       key: 'username',
       name: 'Username',
       description:
@@ -65,22 +75,66 @@ module.exports = {
       adminOnly: false
     },
     {
-      key: 'client',
-      name: 'Client ID',
-      description:
-        'The Client ID for your ThreatQuotient deployment.  (accessible at https://<yourserver>/assets/js/config.js)',
-      default: '',
-      type: 'text',
-      userCanEdit: true,
-      adminOnly: false
-    },
-    {
       key: 'allowDelete',
       name: 'Allow IOC Deletion',
       description:
-        'If checked, users will be able to delete indicators from ThreatQuotient.',
+        'If checked, users will be able to delete indicators from ThreatQuotient. This option must be set to "Users can view only"',
       default: false,
       type: 'boolean',
+      userCanEdit: false,
+      adminOnly: false
+    },
+    {
+      key: 'possibleSubmissionStatuses',
+      name: 'Possible Submission Statuses',
+      description:
+        'Select valid "Status" options when submitting an indicator.  This option must be set to "Users can view only".',
+      default: [
+        {
+          value: '1',
+          display: 'Active'
+        },
+        {
+          value: '2',
+          display: 'Expired'
+        },
+        {
+          value: '3',
+          display: 'Indirect'
+        },
+        {
+          value: '4',
+          display: 'Review'
+        },
+        {
+          value: '5',
+          display: 'Whitelisted'
+        }
+      ],
+      type: 'select',
+      options: [
+        {
+          value: '1',
+          display: 'Active'
+        },
+        {
+          value: '2',
+          display: 'Expired'
+        },
+        {
+          value: '3',
+          display: 'Indirect'
+        },
+        {
+          value: '4',
+          display: 'Review'
+        },
+        {
+          value: '5',
+          display: 'Whitelisted'
+        }
+      ],
+      multiple: true,
       userCanEdit: false,
       adminOnly: false
     }

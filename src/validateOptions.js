@@ -6,7 +6,7 @@ const validateOptions = (options, callback) => {
     url: 'You must provide a valid URL from your ThreatQuotient Account',
     username: 'You must provide a valid Username from your ThreatQuotient Account',
     password: 'You must provide a valid Password from your ThreatQuotient Account',
-    client: 'You must provide a valid Client ID from your ThreatQuotient Account',
+    client: 'You must provide a valid Client ID from your ThreatQuotient Account'
   };
 
   const stringValidationErrors = _validateStringOptions(
@@ -15,8 +15,19 @@ const validateOptions = (options, callback) => {
   );
 
   const urlValidationError = _validateUrlOption(options.url);
+  const noSubmissionStatusesError = !options.possibleSubmissionStatuses.value.length
+    ? [
+        {
+          key: 'possibleSubmissionStatuses',
+          message: 'You must Select one or more Possible Submission Statuses'
+        }
+      ]
+    : [];
 
-  callback(null, stringValidationErrors.concat(urlValidationError));
+  callback(
+    null,
+    stringValidationErrors.concat(urlValidationError).concat(noSubmissionStatusesError)
+  );
 };
 
 const _validateStringOptions = (stringOptionsErrorMessages, options, otherErrors = []) =>

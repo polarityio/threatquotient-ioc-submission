@@ -216,11 +216,9 @@
       <div class="select-container">
         <span class="p-value">Status: </span>
         <select class="w-100" onchange={{action (mut submitStatus) value="target.value"}} disabled={{interactionDisabled}}>
-          <option value="1">Active</option>
-          <option value="2">Expired</option>
-          <option value="3">Indirect</option>
-          <option value="4">Review</option>
-          <option value="5">Whitelisted</option>
+          {{#each block.userOptions.possibleSubmissionStatuses as |submissionStatus|}}
+            <option value="{{submissionStatus.value}}">{{submissionStatus.display}}</option>
+          {{/each}}
         </select>
       </div>
 

@@ -100,7 +100,7 @@ const createRequestWithDefaults = (Logger) => {
     if (![200].includes(roundedStatus)) { 
       const requestError = Error('Request Error');
       requestError.status = statusCode;
-      requestError.description = body;
+      requestError.description = JSON.stringify(body);
       requestError.requestOptions = requestOptions;
       throw requestError;
     }
