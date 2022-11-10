@@ -44,11 +44,11 @@ const doLookup = async (entities, { url, ..._options }, cb) => {
 
 const onMessage = async ({ data: { action, ...actionParams} }, options, callback) => {
   if (action === 'DELETE_ITEM') {
-    deleteItem(actionParams, requestWithDefaults, options, Logger, callback);
+    await deleteItem(actionParams, requestWithDefaults, options, Logger, callback);
   } else if (action === 'SUBMIT_ITEMS') {
-    submitItems(actionParams, requestWithDefaults, options, Logger, callback);
+    await submitItems(actionParams, requestWithDefaults, options, Logger, callback);
   } else if (action === 'SEARCH_TAGS') {
-    searchProperty(
+    await searchProperty(
       { ...actionParams, property: 'tags' },
       requestWithDefaults,
       options,
@@ -56,7 +56,7 @@ const onMessage = async ({ data: { action, ...actionParams} }, options, callback
       callback
     );
   } else if (action === 'SEARCH_SOURCES') {
-    searchProperty(
+    await searchProperty(
       { ...actionParams, property: 'sources' },
       requestWithDefaults,
       options,
