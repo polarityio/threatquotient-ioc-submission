@@ -1,7 +1,7 @@
 <div class={{if (and (not (or newIocs.length newIocsToSubmit.length)) interactionDisabled) "modal-open"}}>
   {{#if foundEntities.length}}
     <h1 class="p-title">
-      {{fa-icon "info-circle" size="sm"}} Already In ThreatQuotient
+      {{fa-icon icon="info-circle" size="sm"}} Already In ThreatQuotient
     </h1>
     {{#if isDeleting}}
       <div class="ioc-deletion-modal">
@@ -35,10 +35,10 @@
             <td>
               {{#if (not interactionDisabled)}}
                 <a href="{{details.url}}/indicators/{{foundEntity.id}}/details">
-                  {{foundEntity.value}} {{fa-icon "external-link" fixedWidth=true class="external-link-icon"}}
+                  {{foundEntity.value}} {{fa-icon icon="external-link" fixedWidth=true class="external-link-icon"}}
                 </a>
               {{else}}
-                <a>{{foundEntity.value}} {{fa-icon "external-link" fixedWidth=true class="external-link-icon"}}</a>
+                <a>{{foundEntity.value}} {{fa-icon icon="external-link" fixedWidth=true class="external-link-icon"}}</a>
               {{/if}}
             </td>
             <td class="type">
@@ -52,7 +52,7 @@
                   title="Delete IOC from ThreatQuotient"
                   disabled={{interactionDisabled}}
                 >
-                  {{fa-icon "trash" fixedWidth=true}}
+                  {{fa-icon icon="trash" fixedWidth=true}}
                 </button>
               </td>
             {{/if}}
@@ -64,7 +64,7 @@
     <div class="d-flex flex-row justify-content-between align-items-center">
       <div>
         {{#if deleteIsRunning}}
-          {{fa-icon "spinner-third" fixedWidth=true spin=true}} Deleting...
+          {{fa-icon icon="spinner-third" fixedWidth=true spin=true}} Deleting...
         {{/if}}
       </div>
 
@@ -85,7 +85,7 @@
     <div>
       <div class="title-with-button">
         <h1 class="p-title">
-          {{fa-icon "sparkles" size="sm" fixedWidth=true}} Not Currently In ThreatQuotient
+          {{fa-icon icon="sparkles" size="sm" fixedWidth=true}} Not Currently In ThreatQuotient
         </h1>
         {{#if newIocs.length}}
           <button
@@ -116,7 +116,7 @@
                   title="Add IOC to Submission List"
                   disabled={{interactionDisabled}}
                 >
-                  {{fa-icon "plus" fixedWidth=true}}
+                  {{fa-icon icon="plus" fixedWidth=true}}
                 </button>
               </td>
             </tr>
@@ -134,7 +134,7 @@
     <div>
       <div class="title-with-button">
         <h1 class="p-title">
-          {{fa-icon "upload" size="sm" fixedWidth=true}} To Be Submitted to&nbsp;
+          {{fa-icon icon="upload" size="sm" fixedWidth=true}} To Be Submitted to&nbsp;
         {{#if newIocsToSubmit.length}}
           <span class="show-threatquotient">
             ThreatQuotient
@@ -181,7 +181,7 @@
                   {{action "removeSubmitItem" entity}}
                   disabled={{interactionDisabled}}
                 >
-                  {{fa-icon "minus" fixedWidth=true}}
+                  {{fa-icon icon="minus" fixedWidth=true}}
                 </button>
               </td>
             </tr>
@@ -198,7 +198,7 @@
 
     <div>
       <h1 class="p-title submission-options py-1">
-        {{fa-icon "cog" size="sm" fixedWidth=true}} Submission Options
+        {{fa-icon icon="cog" size="sm" fixedWidth=true}} Submission Options
       </h1>
 
       <div class="select-container">
@@ -241,7 +241,7 @@
       
       <div class="tag-container">
         <h1 class="p-title">
-          {{fa-icon "tags" fixedWidth=true}} Sources
+          {{fa-icon icon="tags" fixedWidth=true}} Sources
         </h1>
         {{#if (eq selectedSources.length 0)}}
           <span class="p-footnote mb-2 mt-2">
@@ -254,7 +254,7 @@
                 {{source.name}}
                 {{#if (not interactionDisabled)}}
                   <span class="remove-icon-container" {{action "deleteSource" source}}>
-                    {{fa-icon "times" class="tag-close-icon" fixedWidth=true}}
+                    {{fa-icon icon="times" class="tag-close-icon" fixedWidth=true}}
                   </span>
                 {{/if}}
               </span>
@@ -263,7 +263,7 @@
         {{/if}}
         {{#unless (or editingSources interactionDisabled)}}
           <button class="open-modal-btn" {{action "editSources"}}>
-            {{fa-icon "plus" class="open-modal-btn-icon" fixedWidth=true}}
+            {{fa-icon icon="plus" class="open-modal-btn-icon" fixedWidth=true}}
           </button>
         {{/unless}}
 
@@ -293,9 +293,9 @@
                   {{source.name}}
                   <span style="position: relative; top: 1px">
                     {{#if source.isNew}}
-                      {{fa-icon "plus-circle" fixedWidth=true}}
+                      {{fa-icon icon="plus-circle" fixedWidth=true}}
                     {{else}}
-                      {{fa-icon "check-circle" fixedWidth=true}}
+                      {{fa-icon icon="check-circle" fixedWidth=true}}
                     {{/if}}
                   </span>
                 </span>
@@ -310,7 +310,7 @@
       </div>
       <div class="tag-container">
         <h1 class="p-title">
-          {{fa-icon "tags" fixedWidth=true}} Tags
+          {{fa-icon icon="tags" fixedWidth=true}} Tags
         </h1>
         {{#if (eq selectedTags.length 0)}}
           <span class="p-footnote mb-2 mt-2">
@@ -323,7 +323,7 @@
                 {{tag.name}}
                 {{#if (not interactionDisabled)}}
                   <span class="remove-icon-container" {{action "deleteTag" tag}}>
-                    {{fa-icon "times" class="tag-close-icon" fixedWidth=true}}
+                    {{fa-icon icon="times" class="tag-close-icon" fixedWidth=true}}
                   </span>
                 {{/if}}
               </span>
@@ -332,7 +332,7 @@
         {{/if}}
         {{#unless (or editingTags interactionDisabled)}}
           <button class="open-modal-btn" {{action "editTags"}}>
-            {{fa-icon "plus" class="open-modal-btn-icon" fixedWidth=true}}
+            {{fa-icon icon="plus" class="open-modal-btn-icon" fixedWidth=true}}
           </button>
         {{/unless}}
 
@@ -363,9 +363,9 @@
                   {{tag.name}}
                   <span style="position: relative; top: 1px">
                     {{#if tag.isNew}}
-                      {{fa-icon "plus-circle" fixedWidth=true}}
+                      {{fa-icon icon="plus-circle" fixedWidth=true}}
                     {{else}}
-                      {{fa-icon "check-circle" fixedWidth=true}}
+                      {{fa-icon icon="check-circle" fixedWidth=true}}
                     {{/if}}
                   </span>
                 </span>
@@ -385,7 +385,7 @@
               disabled={{interactionDisabled}}
               class="p-btn btn btn-secondary m-0">
         {{#if createIsRunning}}
-          {{fa-icon "spinner-third" fixedWidth=true spin=true}}
+          {{fa-icon icon="spinner-third" fixedWidth=true spin=true}}
         {{else}}
           Submit IOCs
         {{/if}}

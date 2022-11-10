@@ -1,9 +1,9 @@
 const fs = require('fs');
-const request = require('request');
-const { promisify } = require('util');
-const fp = require('lodash/fp');
+const request = require('postman-request');
 const config = require('../config/config');
 const getAuthToken = require('./getAuthToken');
+const { version: packageVersion } = require('../package.json');
+const USER_AGENT = `polarity-threatq-ioc-submission-integration-v${packageVersion}`;
 
 const { checkForInternalServiceError } = require('./handleError');
 
@@ -21,7 +21,10 @@ const createRequestWithDefaults = (Logger) => {
     ...(_configFieldIsValid(passphrase) && { passphrase }),
     ...(_configFieldIsValid(proxy) && { proxy }),
     ...(typeof rejectUnauthorized === 'boolean' && { rejectUnauthorized }),
-    json: true
+    json: true,
+    headers: {
+      'User-Agent': USER_AGENT
+    }
   };
 
   const requestWithDefaults = (
@@ -64,20 +67,15 @@ const createRequestWithDefaults = (Logger) => {
     };
   };
 
-
-  const handleAuth = async ({
-    options,
-    ...requestOptions
-  }) => {
+  const handleAuth = async ({ options, ...requestOptions }) => {
     const isAuthRequest = requestOptions.authRequest;
     if (!isAuthRequest) {
-      const token = await getAuthToken(
-        options,
-        requestDefaultsWithInterceptors
-      ).catch((error) => {
-        Logger.error({ error }, 'Unable to retrieve Auth Token');
-        throw error;
-      });
+      const token = await getAuthToken(options, requestDefaultsWithInterceptors).catch(
+        (error) => {
+          Logger.error({ error }, 'Unable to retrieve Auth Token');
+          throw error;
+        }
+      );
 
       Logger.trace({ token }, 'Token');
 
@@ -97,7 +95,7 @@ const createRequestWithDefaults = (Logger) => {
     Logger.trace({ statusCode, body, requestOptions });
     checkForInternalServiceError(statusCode, body);
     const roundedStatus = Math.round(statusCode / 100) * 100;
-    if (![200].includes(roundedStatus)) { 
+    if (![200].includes(roundedStatus)) {
       const requestError = Error('Request Error');
       requestError.status = statusCode;
       requestError.description = JSON.stringify(body);
@@ -106,7 +104,6 @@ const createRequestWithDefaults = (Logger) => {
     }
   };
 
-  
   const requestDefaultsWithInterceptors = requestWithDefaults(handleAuth);
 
   return requestDefaultsWithInterceptors;
