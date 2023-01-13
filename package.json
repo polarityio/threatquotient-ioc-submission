@@ -1,7 +1,7 @@
 {
-  "main": "./integration.js",
   "name": "threatquotient-ioc-submission",
-  "version": "3.1.0",
+  "version": "3.1.1",
+  "main": "./integration.js",
   "private": true,
   "license": "MIT",
   "author": "Polarity",
