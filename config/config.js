@@ -4,6 +4,7 @@ module.exports = {
   description:
     'Polarity integration that connects to the ThreatQuotient threat intelligence platform using the IOC Submission interface format.',
   entityTypes: ['domain', 'IPv4', 'IPv6', 'IPv4CIDR', 'email', 'MD5', 'SHA1', 'SHA256'],
+  defaultColor: 'light-pink',
   styles: ['./styles/styles.less'],
   block: {
     component: {

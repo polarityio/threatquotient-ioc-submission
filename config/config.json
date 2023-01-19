@@ -12,6 +12,7 @@
     "SHA1",
     "SHA256"
   ],
+  "defaultColor": "light-pink",
   "styles": [
     "./styles/styles.less"
   ],
