@@ -1,4 +1,5 @@
 {
+  "polarityIntegrationUuid": "e841d5d0-cce1-11ed-aeee-075d3490155d",
   "name": "ThreatQuotient IOC Submission",
   "acronym": "TQ+",
   "description": "Polarity integration that connects to the ThreatQuotient threat intelligence platform using the IOC Submission interface format.",
