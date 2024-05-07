@@ -1,6 +1,6 @@
 {
   "name": "threatquotient-ioc-submission",
-  "version": "3.1.3",
+  "version": "3.1.4",
   "main": "./integration.js",
   "private": true,
   "license": "MIT",
@@ -9,6 +9,6 @@
     "aigle": "^1.14.1",
     "lodash": "^4.17.21",
     "node-cache": "^5.1.2",
-    "postman-request": "^2.88.1-postman.31"
+    "postman-request": "^2.88.1-postman.32"
   }
 }
